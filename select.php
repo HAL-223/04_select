@@ -23,21 +23,20 @@ $animals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // $stmt = $dbh->prepare("select * from animals where description like :keyword");
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $description = $_GET['description'];
+  $description = $_GET['description']; 
   $errors = [];
 
   if ($description == '') {
     $errors = ['検索ワード入力'];
   }
   if (empty($errors)) {
-
+    $sql2 = "select * from animals where description like '%description%'";
+    $stmt = $dbh->prepare($sql2);
+    $stmt->execute();
+    $description = $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 }
 
-$sql2 = "select * from animals where description like '%'$description'%'";
-$stmt = $dbh->prepare($sql2);
-$stmt->execute();
-$description = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 ?>
@@ -54,7 +53,7 @@ $description = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <h1>本日のご紹介ペット！</h1>
   <p>
     <form action="" method="get">
-      キーワード:<input type="text" name="description" value="<?php echo $description ?>" placeholder="キーワードの入力">
+      キーワード:<input type="text" name="description" placeholder="キーワードの入力">
       <input type="submit" value="検索">
     </form>
   </p>
