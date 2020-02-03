@@ -11,32 +11,27 @@ try {
   exit;
 }
 
-$sql = "select * from animals";
 
-$stmt = $dbh->prepare($sql);
-
-$stmt->execute();
-
-$animals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // $keyword = '%'.$keyword.'%';
 // $stmt = $dbh->prepare("select * from animals where description like :keyword");
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $description = $_GET['description']; 
-  $errors = [];
+  $keyword = $_GET['keyword']; 
 
-  if ($description == '') {
-    $errors = ['検索ワード入力'];
-  }
-  if (empty($errors)) {
-    $sql2 = "select * from animals where description like '%description%'";
-    $stmt = $dbh->prepare($sql2);
-    $stmt->execute();
-    $description = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  }
+  if ($keyword == '') {
+  $sql = "select * from animals";
+  $stmt = $dbh->prepare($sql);
+} else {
+  $sql = "select * from animals where description like :keyword";
+  $stmt = $dbh->prepare($sql);
+  $keyword_param = '%' . $keyword . '%';
+  $stmt -> bindParam(":keyword", $keyword_param);
 }
-
+  $stmt->execute();
+  
+  $animals = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
 ?>
@@ -53,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   <h1>本日のご紹介ペット！</h1>
   <p>
     <form action="" method="get">
-      キーワード:<input type="text" name="description" placeholder="キーワードの入力">
+      キーワード:<input type="text" name="keyword" placeholder="キーワードの入力">
       <input type="submit" value="検索">
     </form>
   </p>
